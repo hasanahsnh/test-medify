@@ -34,7 +34,8 @@ class CategoryItemController extends Controller
     }
 
     public function singleView($kode) {
-
+        $data['data'] = CategoryItem::where('kode_kategori_item', $kode)->firstOrFail();
+        return view('master_items.single.category-item', $data);
     }
 
     public function formSubmit(Request $request, $method, $id = 0) {
