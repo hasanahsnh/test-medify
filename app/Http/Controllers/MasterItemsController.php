@@ -23,10 +23,12 @@ class MasterItemsController extends Controller
 
         if (!empty($kode)) $data_search = $data_search->where('kode', $kode);
         if (!empty($nama)) $data_search = $data_search->where('nama', 'LIKE', '%' . $nama . '%');
-        if (!empty($hargamin)) $data_search = $data_search->where('harga_beli', '>=', $hargamin)->where('harga_beli', '<=', $hargamax);
+
+        // fix bug filter harga min dan max
+        if (!empty($hargamin)) $data_search = $data_search->where('harga_beli', '>=', $hargamin);
+        if (!empty($hargamax)) $data_search = $data_search->where('harga_beli', '<=', $hargamax);
 
         $data_search = $data_search->select('kode', 'nama', 'jenis', 'harga_beli', 'laba', 'supplier')->orderBy('id')->get();
-
 
         return json_encode([
             'status' => 200,
@@ -54,6 +56,10 @@ class MasterItemsController extends Controller
 
     public function formSubmit(Request $request, $method, $id = 0)
     {
+        $request->validate([
+            'foto' => 'nullable|image|mimes:jpg,jpeg,png|max:500',
+        ]);
+
         if ($method == 'new') {
             $data_item = new MasterItem;
             $kode = MasterItem::count('id');
@@ -71,6 +77,15 @@ class MasterItemsController extends Controller
         $data_item->kode = $kode;
         $data_item->supplier = $request->supplier;
         $data_item->jenis = $request->jenis;
+
+        // simpan foto ke folder public/images
+        if ($request->hasFile('foto')) {
+            $file = $request->file('foto');
+            $filename = time() . '_' . $data_item->kode . '.' . $file->getClientOriginalExtension();
+            $file->move(public_path('images'), $filename);
+            $data_item->foto = 'images/' . $filename;
+        }
+
         $data_item->save();
 
         return redirect('master-items');
@@ -80,6 +95,8 @@ class MasterItemsController extends Controller
     {
         MasterItem::find($id)->delete();
         return redirect('master-items');
+
+        // karena soft delete, data tidak benar-benar terhapus, hanya ditandai sebagai terhapus
     }
 
     public function updateRandomData()
@@ -95,6 +112,10 @@ class MasterItemsController extends Controller
             $item->kode = $kode;
             $item->supplier = $this->getRandomSupplier();
             $item->jenis = $this->getRandomJenis();
+
+            // ambil foto
+            $foto = $item->foto;
+
             $item->save();
         }
     }

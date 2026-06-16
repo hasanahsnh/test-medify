@@ -5,6 +5,8 @@ use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 use App\Models\User;
 
+use Illuminate\Support\Facades\Hash;
+
 return new class extends Migration
 {
     /**
@@ -24,6 +26,7 @@ return new class extends Migration
             $table->timestamps();
         });
 
+    // todo kredensial default untuk login
 	$user = new User;
 	$user->email = "123@123";
 	$user->name = "123";

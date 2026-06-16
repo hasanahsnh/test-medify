@@ -1,6 +1,11 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
+use Illuminate\Support\Facades\Auth;
+
+use App\Http\Controllers\HomeController as Home;
+use App\Http\Controllers\MasterItemsController as MasterItem;
+use App\Http\Controllers\CategoryItemController as CategoryItem;
 
 /*
 |--------------------------------------------------------------------------
@@ -19,15 +24,25 @@ Route::get('/', function () {
 
 Auth::routes();
 
-Route::get('/home', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/', [App\Http\Controllers\HomeController::class, 'index'])->name('home');
-Route::get('/master-items', [App\Http\Controllers\MasterItemsController::class, 'index']);
-Route::get('/master-items/search', [App\Http\Controllers\MasterItemsController::class, 'search']);
-Route::get('/master-items/form/{method}/{id?}', [App\Http\Controllers\MasterItemsController::class, 'formView']);
-Route::post('/master-items/form/{method}/{id?}', [App\Http\Controllers\MasterItemsController::class, 'formSubmit']);
+// route master item
+Route::get('/home', [Home::class, 'index'])->name('home');
+Route::get('/', [Home::class, 'index'])->name('home');
+Route::get('/master-items', [MasterItem::class, 'index']);
+Route::get('/master-items/search', [MasterItem::class, 'search']);
+Route::get('/master-items/form/{method}/{id?}', [MasterItem::class, 'formView']);
+Route::post('/master-items/form/{method}/{id?}', [MasterItem::class, 'formSubmit']);
 
-Route::get('/master-items/view/{kode}', [App\Http\Controllers\MasterItemsController::class, 'singleView']);
-Route::get('/master-items/delete/{id}', [App\Http\Controllers\MasterItemsController::class, 'delete']);
+Route::get('/master-items/view/{kode}', [MasterItem::class, 'singleView']);
+Route::get('/master-items/delete/{id}', [MasterItem::class, 'delete']);
 
 
-Route::get('/master-items/update-random-data', [App\Http\Controllers\MasterItemsController::class, 'updateRandomData']);
+Route::get('/master-items/update-random-data', [MasterItem::class, 'updateRandomData']);
+
+// route kategori item
+Route::get('/category-items', [CategoryItem::class, 'index'])->name('category');
+Route::get('/category-items/form/{method}/{id?}', [CategoryItem::class, 'formView'])->name('category.form');
+Route::post('/category-items/form/{method}/{id?}', [CategoryItem::class, 'formSubmit'])->name('category.items.submit');
+Route::get('/category-items/search', [CategoryItem::class, 'search']);
+
+Route::get('/category-items/view/{kode}', [CategoryItem::class, 'singleView']);
+
